@@ -5,7 +5,7 @@
     document.body.appendChild(widgetContainer);
 
     // Fetch the asset manifest
-    fetch('http://localhost:3000/asset-manifest.json')
+    fetch('https://tmai-widget-openai.vercel.app/asset-manifest.json')
     .then(function(response) {
         return response.json();
     })
@@ -15,7 +15,7 @@
         var jsFilename = data.files['main.js'];
 
         // Base URL for your assets
-        var baseUrl = 'http://localhost:3000';
+        var baseUrl = 'https://tmai-widget-openai.vercel.app/';
 
         // Construct the URLs with the retrieved filenames
         var cssUrl = baseUrl + cssFilename;
