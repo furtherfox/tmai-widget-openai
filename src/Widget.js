@@ -4,7 +4,6 @@
   import AudioPlayer from './AudioPlayer';
   import LanguageSelector from './LanguageSelector';
   import VoiceSelector from './VoiceSelector';
-  import readData from './readData'; // Adjust the path based on your file structure
   import styles from './Widget.module.css';
 
   const Widget = () => {
@@ -49,27 +48,23 @@
         });
     
         if (response.ok) {
-          const mediaSource = new MediaSource();
-          audioRef.current.src = URL.createObjectURL(mediaSource);
+          // Assuming the server sends back a direct URL to the audio file
+          const responseData = await response.json();
+          const audioUrl = responseData.audioUrl;
     
-          mediaSource.addEventListener('sourceopen', () => {
-            const sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg'); // Specify MIME type
-            const reader = response.body.getReader();
-            readData(sourceBuffer, mediaSource, reader, () => {});
-          });
-    
+          // Set the audio source and play
+          audioRef.current.src = audioUrl;
           await audioRef.current.play();
           setIsPlaying(true);
-          setIsLoading(false);
         } else {
           throw new Error('Failed to fetch audio');
         }
       } catch (error) {
         console.error('Error fetching audio:', error);
+      } finally {
         setIsLoading(false);
       }
     };
-    
 
     const handleStopClick = () => {
       if (audioRef.current) {
