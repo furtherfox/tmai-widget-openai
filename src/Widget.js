@@ -42,7 +42,7 @@
       const contentToSend = document.documentElement.innerText;
     
       try {
-        const response = await fetch('http://localhost:8000/generate_audio', {
+        const response = await fetch('https://tmai-server-openai-b5ecbf724194.herokuapp.com/generate_audio', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: contentToSend, language, voiceId })
