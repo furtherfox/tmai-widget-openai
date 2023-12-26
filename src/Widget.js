@@ -4,6 +4,7 @@
   import AudioPlayer from './AudioPlayer';
   import LanguageSelector from './LanguageSelector';
   import VoiceSelector from './VoiceSelector';
+  import readData from './readData'; // Adjust the path based on your file structure
   import styles from './Widget.module.css';
 
   const Widget = () => {
@@ -41,30 +42,34 @@
       const contentToSend = document.documentElement.innerText;
     
       try {
-        const response = await fetch('https://tmai-server-openai-b5ecbf724194.herokuapp.com/generate_audio', {
+        const response = await fetch('http://localhost:8000/generate_audio', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: contentToSend, language, voiceId })
         });
     
         if (response.ok) {
-          // Assuming the server sends back a direct URL to the audio file
-          const responseData = await response.json();
-          const audioUrl = responseData.audioUrl;
+          const mediaSource = new MediaSource();
+          audioRef.current.src = URL.createObjectURL(mediaSource);
     
-          // Set the audio source and play
-          audioRef.current.src = audioUrl;
+          mediaSource.addEventListener('sourceopen', () => {
+            const sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg'); // Specify MIME type
+            const reader = response.body.getReader();
+            readData(sourceBuffer, mediaSource, reader, () => {});
+          });
+    
           await audioRef.current.play();
           setIsPlaying(true);
+          setIsLoading(false);
         } else {
           throw new Error('Failed to fetch audio');
         }
       } catch (error) {
         console.error('Error fetching audio:', error);
-      } finally {
         setIsLoading(false);
       }
     };
+    
 
     const handleStopClick = () => {
       if (audioRef.current) {
